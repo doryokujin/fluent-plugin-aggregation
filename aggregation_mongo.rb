@@ -3,7 +3,6 @@ module Fluent
 
 class AggregationMongo  < AggregationBase
   Plugin.register_output('aggregation_mongo', self)
-  include MetricsMixin
 
   def initialize
     super

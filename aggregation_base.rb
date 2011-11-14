@@ -2,6 +2,7 @@
 module Fluent
 
 class AggregationBase  < TimeSlicedOutput
+  require File.dirname(__FILE__)+"/metrics"
   include MetricsMixin
 
   def initialize

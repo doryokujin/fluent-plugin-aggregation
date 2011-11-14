@@ -3,7 +3,6 @@ module Fluent
 
 class AggregationRedis  < AggregationBase
   Plugin.register_output('aggregation_redis', self)
-  include MetricsMixin
 
   def initialize
     super

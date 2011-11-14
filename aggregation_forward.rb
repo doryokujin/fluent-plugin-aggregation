@@ -3,6 +3,7 @@ module Fluent
 
 class ForwardAggregationOutput < ForwardOutput
   Plugin.register_output('aggregation_forward', self)
+  require File.dirname(__FILE__)+"/metrics"
   include MetricsMixin
 
   def initialize
