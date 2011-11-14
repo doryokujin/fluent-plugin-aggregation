@@ -28,16 +28,17 @@ class ForwardAggregationOutput < ForwardOutput
   end
 
   def format(tag, time, record)
-    result = nil
+    result = ''
     if @metrics.length==0
-      result = record.to_msgpack
+      key_hash = record["key"]
+      partition_id = partition(key_hash)
+      result = [ partition_id, record ].to_msgpack
     else
       each_metrics(time, record) {|metrics,keys,value,count,partition|
         key_hash = Hash[ metrics.keys.zip(keys) ]
         partition_id = partition(key_hash)
         obj = {
           "name" => metrics.name,
-          "partition_id" => partition_id,
           "partition" => partition,
           "key" => key_hash,
           "count" => count
@@ -46,7 +47,7 @@ class ForwardAggregationOutput < ForwardOutput
           value_hash = {metrics.value_key => value}
           obj["value"] = value_hash
         end
-        result = [ partition_id, obj ].to_msgpack
+        result << [ partition_id, obj ].to_msgpack
       }
     end
     result
@@ -71,6 +72,7 @@ class ForwardAggregationOutput < ForwardOutput
     @pre_aggregation = {}
     tag = chunk.key
     get_partitioned_records(chunk).each{ |partition_id, record|
+#      p "tag = " + tag
       chunk = MemoryBufferChunk.new(tag, record)
       node_index = partition_id
       @num.times do
